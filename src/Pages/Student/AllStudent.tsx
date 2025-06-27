@@ -58,9 +58,6 @@ const App: React.FC = () => {
   const [id, setId] = useState("");
   const [updateOpen, setUpdateOpen] = useState(false);
   const [open, setOpen] = useState(false);
-  // const [confirmLoading, setConfirmLoading] = useState(false);
-  // const [loading, setLoading] = useState(false);
-  //all loding state arae here
   const [submitLoading, setSubmitLoading] = useState(false);
   const [updateLoading, setUpdateLoading] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
@@ -94,7 +91,7 @@ const App: React.FC = () => {
       setConfirmLoading(false);
     }
     closeDeletePopup();
-    fetchData();
+    fetchData(paginations.pageNumber, paginations.pageSize, undefined, undefined);
   };
 
   interface UpdateStudentRecord {
@@ -111,7 +108,9 @@ const App: React.FC = () => {
     // [key: string]: any;
   }
 
-  const updateStudentDetails = async (record: UpdateStudentRecord): Promise<void> => {
+  const updateStudentDetails = async (
+    record: UpdateStudentRecord
+  ): Promise<void> => {
     setId(record.id);
     console.log("the record is ", record);
 
@@ -141,7 +140,7 @@ const App: React.FC = () => {
       dataIndex: "name",
       key: "name",
       render: (text) => <a>{text}</a>,
-       sorter: (a, b) => a.name.localeCompare(b.name),
+      sorter: {},
       sortDirections: ["ascend", "descend"],
     },
     {
@@ -149,7 +148,7 @@ const App: React.FC = () => {
       dataIndex: "fatherName",
       key: "fatherName",
       render: (text) => <a>{text}</a>,
-      sorter: (a, b) => a.name.localeCompare(b.name),
+      sorter: {},
       sortDirections: ["ascend", "descend"],
     },
     {
@@ -162,8 +161,7 @@ const App: React.FC = () => {
         const resizeDate = dayjs(formattedDate).format("DD-MM-YYYY");
         return <>{resizeDate}</>;
       },
-      sorter: (a, b) => new Date(a.date_of_Birth).getTime() - new Date(b.date_of_Birth).getTime(),
-      sortDirections: ["ascend", "descend"],
+      sorter: {}
     },
     {
       title: "Gender",
@@ -273,7 +271,7 @@ const App: React.FC = () => {
           SchoolAddress: "",
         });
         setOpen(false);
-        fetchData();
+        fetchData(paginations.pageNumber, paginations.pageSize, undefined, undefined);
       }
     } catch (error) {
       console.error(error);
@@ -281,12 +279,14 @@ const App: React.FC = () => {
       setSubmitLoading(false);
     }
   };
-  
+
   const fetchData = async (
     pageNumber = paginations.pageNumber,
-    pageSize = paginations.pageSize
+    pageSize = paginations.pageSize,
+    sortField: string,
+    sortOrder: string
   ) => {
-    const response = await dispatch(GetAlluser({ pageNumber, pageSize }));
+    const response = await dispatch(GetAlluser({ pageNumber, pageSize, sortField, sortOrder }));
     if (response.payload?.success) {
       setPagination((prev) => ({
         ...prev,
@@ -304,7 +304,7 @@ const App: React.FC = () => {
       const response = await UpdateUser(id, allUpdatedata);
       console.log(response);
       if (response) {
-        fetchData();
+        fetchData(paginations.pageNumber, paginations.pageSize, undefined, undefined);
         setUpdateOpen(false);
       }
     } catch (error) {
@@ -315,18 +315,31 @@ const App: React.FC = () => {
   };
   const onChange: TableProps<DataType>["onChange"] = async (
     pagination,
-    
+    filters,
+    sorter
   ) => {
     const newPageNumber = pagination.current || 1;
     const newPageSize = pagination.pageSize || 5;
-
+    console.log(sorter);
+    console.log(pagination);
+    console.log(filters);
+    let sortField, sortOrder;
+    if (sorter && !Array.isArray(sorter)) {
+      sortField = sorter.field;
+      sortOrder =
+        sorter.order === "ascend"
+          ? "asc"
+          : sorter.order === "descend"
+          ? "desc"
+          : undefined;
+    }
     setPagination((prev) => ({
       ...prev,
       pageNumber: newPageNumber,
       pageSize: newPageSize,
     }));
 
-    await fetchData(newPageNumber, newPageSize);
+    await fetchData(newPageNumber, newPageSize, sortField, sortOrder);
   };
   const cancelStudent = (e: React.MouseEvent<HTMLButtonElement>) => {
     console.log(e);
@@ -336,11 +349,10 @@ const App: React.FC = () => {
   // end ant code
 
   useEffect(() => {
-    fetchData();
+    fetchData(paginations.pageNumber, paginations.pageSize, undefined, undefined);
   }, []);
 
   const handleOk = () => {
-    // setModalText("The modal will be closed after two seconds");
     setConfirmLoading(true);
     setTimeout(() => {
       setOpen(false);
@@ -522,9 +534,6 @@ const App: React.FC = () => {
               current: paginations.pageNumber,
               pageSize: paginations.pageSize,
               total: paginations.total,
-              // showSizeChanger: true,
-              // showQuickJumper: true,
-              // pageSizeOptions: ["5", "10", "20"],
             }}
           />
         </div>
