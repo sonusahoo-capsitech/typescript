@@ -47,16 +47,22 @@ export async function registerUser(userData: SignupStudentData) {
   }
 }
 
-export const GetAlluser = createAsyncThunk("student/login", async () => {
-  try {
-    const response = await axiosInstance.get("/api/StudentRegister/v1/AllUser");
-    // console.log(response);
+export const GetAlluser = createAsyncThunk(
+  "student/login",
+  async ({ pageNumber, pageSize }: { pageNumber: number; pageSize: number }) => {
+    try {
+      console.log(pageNumber,pageSize);
+      const response = await axiosInstance.get(`/api/StudentRegister/v1/AllUser?pageNumber=${pageNumber}&pageSize=${pageSize}`, {
+        params: { pageNumber, pageSize },
+      });
+      console.log(response);
 
-    return (await response)?.data;
-  } catch (error) {
-    console.log(error);
+      return (await response)?.data;
+    } catch (error) {
+      console.log(error);
+    }
   }
-});
+);
 
 interface id {
   studentId: string;
@@ -66,7 +72,7 @@ export async function deleteUser(studentId: id) {
   try {
     console.log(studentId);
     const response = await axiosInstance.delete(
-      `/api/StudentRegister/v1/DeleteStudentDetails/${studentId}`
+      `/api/StudentRegister/v1/DeleteStudentDetails/${studentId} `
     );
     console.log("The response is ", response);
     if (!response.data?.success) {
@@ -132,3 +138,7 @@ const studentSlice = createSlice({
 });
 
 export default studentSlice.reducer;
+
+
+
+

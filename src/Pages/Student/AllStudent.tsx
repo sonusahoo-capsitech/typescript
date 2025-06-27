@@ -12,8 +12,7 @@ import type { AppDispatch } from "../../Redux/Store.ts";
 import { Button, Modal, Input, Form, Select } from "antd";
 import type { FormProps } from "antd";
 import dayjs from "dayjs";
-
-// import { Button, Form, Input, Radio } from 'antd';
+// import type { TableColumnsType, TableProps } from 'antd';
 
 interface DataType {
   key: string;
@@ -65,6 +64,11 @@ const App: React.FC = () => {
   const [submitLoading, setSubmitLoading] = useState(false);
   const [updateLoading, setUpdateLoading] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
+  const [paginations, setPagination] = useState({
+    pageNumber: 1,
+    pageSize: 5,
+    total: 0,
+  });
   const data: DataType[] = studentData;
   console.log(data);
 
@@ -93,27 +97,29 @@ const App: React.FC = () => {
     fetchData();
   };
 
-  const updateStudentDetails = async (record) => {
+  interface UpdateStudentRecord {
+    id: string;
+    name: string;
+    fatherName: string;
+    date_of_Birth: string;
+    gender: string;
+    class: string;
+    address: string;
+    school: string;
+    medium: string;
+    schoolAddress: string;
+    // [key: string]: any;
+  }
+
+  const updateStudentDetails = async (record: UpdateStudentRecord): Promise<void> => {
     setId(record.id);
     console.log("the record is ", record);
 
-    let formattedDate = "";
+    let formattedDate: string = "";
     if (record.date_of_Birth) {
       const date = new Date(record.date_of_Birth);
       formattedDate = date.toISOString().split("T")[0];
     }
-
-    // setStudentData({
-    //   Name: record.name,
-    //   FatherName: record.fatherName,
-    //   Date_of_Birth: record.fatherName,
-    //   Gender: record.gender,
-    //   Class: record.class,
-    //   Address: record.address,
-    //   School: record.school,
-    //   Medium: record.medium,
-    //   SchoolAddress: record.schoolAddress,
-    // });
     form1.setFieldsValue(record);
 
     console.log(form1.setFieldValue("Name", record.name));
@@ -135,12 +141,16 @@ const App: React.FC = () => {
       dataIndex: "name",
       key: "name",
       render: (text) => <a>{text}</a>,
+       sorter: (a, b) => a.name.localeCompare(b.name),
+      sortDirections: ["ascend", "descend"],
     },
     {
       title: "FatherName",
       dataIndex: "fatherName",
       key: "fatherName",
       render: (text) => <a>{text}</a>,
+      sorter: (a, b) => a.name.localeCompare(b.name),
+      sortDirections: ["ascend", "descend"],
     },
     {
       title: "Date_of_Birth",
@@ -152,6 +162,8 @@ const App: React.FC = () => {
         const resizeDate = dayjs(formattedDate).format("DD-MM-YYYY");
         return <>{resizeDate}</>;
       },
+      sorter: (a, b) => new Date(a.date_of_Birth).getTime() - new Date(b.date_of_Birth).getTime(),
+      sortDirections: ["ascend", "descend"],
     },
     {
       title: "Gender",
@@ -175,26 +187,6 @@ const App: React.FC = () => {
       dataIndex: "class",
       key: "class",
     },
-    // {
-    //   title: "Tags",
-    //   key: "tags",
-    //   dataIndex: "tags",
-    //   render: (_, { tags }) => (
-    //     <>
-    //       {tags.map((tag) => {
-    //         let color = tag.length > 5 ? "geekblue" : "green";
-    //         if (tag === "loser") {
-    //           color = "volcano";
-    //         }
-    //         return (
-    //           <Tag color={color} key={tag}>
-    //             {tag.toUpperCase()}
-    //           </Tag>
-    //         );
-    //       })}
-    //     </>
-    //   ),
-    // },
     {
       title: "School",
       dataIndex: "school",
@@ -289,8 +281,18 @@ const App: React.FC = () => {
       setSubmitLoading(false);
     }
   };
-  const fetchData = async () => {
-    await dispatch(GetAlluser());
+  
+  const fetchData = async (
+    pageNumber = paginations.pageNumber,
+    pageSize = paginations.pageSize
+  ) => {
+    const response = await dispatch(GetAlluser({ pageNumber, pageSize }));
+    if (response.payload?.success) {
+      setPagination((prev) => ({
+        ...prev,
+        total: response.payload?.total,
+      }));
+    }
   };
 
   const handelInputChangeForm = async () => {};
@@ -311,12 +313,28 @@ const App: React.FC = () => {
       setUpdateLoading(false);
     }
   };
+  const onChange: TableProps<DataType>["onChange"] = async (
+    pagination,
+    
+  ) => {
+    const newPageNumber = pagination.current || 1;
+    const newPageSize = pagination.pageSize || 5;
 
+    setPagination((prev) => ({
+      ...prev,
+      pageNumber: newPageNumber,
+      pageSize: newPageSize,
+    }));
+
+    await fetchData(newPageNumber, newPageSize);
+  };
   const cancelStudent = (e: React.MouseEvent<HTMLButtonElement>) => {
     console.log(e);
     setUpdateOpen(false);
   };
+
   // end ant code
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -499,6 +517,15 @@ const App: React.FC = () => {
             columns={columns}
             dataSource={data}
             rowKey="id"
+            onChange={onChange}
+            pagination={{
+              current: paginations.pageNumber,
+              pageSize: paginations.pageSize,
+              total: paginations.total,
+              // showSizeChanger: true,
+              // showQuickJumper: true,
+              // pageSizeOptions: ["5", "10", "20"],
+            }}
           />
         </div>
         <Modal

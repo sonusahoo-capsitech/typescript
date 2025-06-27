@@ -1,63 +1,106 @@
-/*
-
-// ...existing code...
-const updateStudentDetails = async (record) => {
-  setId(record.id);
-  console.log("the record is ", record);
-
-  // Format date for input type="date"
-  let formattedDate = "";
-  if (record.date_of_Birth) {
-    const date = new Date(record.date_of_Birth);
-    formattedDate = date.toISOString().split("T")[0]; // yyyy-MM-dd
-  }
-
-  setStudentData({
-    Name: record.name,
-    FatherName: record.fatherName,
-    Date_of_Birth: formattedDate,
-    Gender: record.gender,
-    Class: record.class,
-    Address: record.address,
-    School: record.school,
-    Medium: record.medium,
-    SchoolAddress: record.schoolAddress,
-  });
-
-  form1.setFieldsValue({
-    ...record,
-    Date_of_Birth: formattedDate,
-  });
-
-  setUpdateOpen(true);
-};
-// ...existing code...
-
-
-
-
-
-// Example usage of message.useMessage() with nested Context Providers
-
-import React, { createContext } from "react";
-import { message } from "antd";
-
-const Context1 = createContext<string>("Default1");
-const Context2 = createContext<string>("Default2");
-
-const App: React.FC = () => {
-  const [api, contextHolder] = message.useMessage();
-
-  return (
-    <Context1.Provider value="Ant">
-      {/* contextHolder is inside Context1, so api gets Context1's value */}
-      {contextHolder}
-      <Context2.Provider value="Design">
-        {/* contextHolder is outside Context2, so api does NOT get Context2's value */}
-        {/* ...other components... */}
-      </Context2.Provider>
-    </Context1.Provider>
-  );
-};
-
-export default App;
+// // ...existing code...
+//   const columns: TableProps<DataType>["columns"] = [
+//     {
+//       title: "Name",
+//       dataIndex: "name",
+//       key: "name",
+//       render: (text) => <a>{text}</a>,
+//       sorter: (a, b) => a.name.localeCompare(b.name),
+//       sortDirections: ["ascend", "descend"],
+//     },
+//     {
+//       title: "FatherName",
+//       dataIndex: "fatherName",
+//       key: "fatherName",
+//       render: (text) => <a>{text}</a>,
+//       sorter: (a, b) => a.fatherName.localeCompare(b.fatherName),
+//       sortDirections: ["ascend", "descend"],
+//     },
+//     {
+//       title: "Date_of_Birth",
+//       dataIndex: "date_of_Birth",
+//       key: "date_of_Birth",
+//       render: (date_of_Birth) => {
+//         const date = new Date(date_of_Birth);
+//         const formattedDate = date.toISOString().split("T")[0];
+//         const resizeDate = dayjs(formattedDate).format("DD-MM-YYYY");
+//         return <>{resizeDate}</>;
+//       },
+//       sorter: (a, b) => new Date(a.date_of_Birth).getTime() - new Date(b.date_of_Birth).getTime(),
+//       sortDirections: ["ascend", "descend"],
+//     },
+//     {
+//       title: "Gender",
+//       dataIndex: "gender",
+//       key: "gender",
+//       render: (gender) => {
+//         let color = "default";
+//         if (gender === "Male") color = "red";
+//         else if (gender === "Female") color = "magenta";
+//         else color = "gold";
+//         return <Tag color={color}>{gender}</Tag>;
+//       },
+//       sorter: (a, b) => a.gender.localeCompare(b.gender),
+//       sortDirections: ["ascend", "descend"],
+//     },
+//     {
+//       title: "Address",
+//       dataIndex: "address",
+//       key: "address",
+//       sorter: (a, b) => a.address.localeCompare(b.address),
+//       sortDirections: ["ascend", "descend"],
+//     },
+//     {
+//       title: "Class",
+//       dataIndex: "class",
+//       key: "class",
+//       sorter: (a, b) => a.class.localeCompare(b.class),
+//       sortDirections: ["ascend", "descend"],
+//     },
+//     {
+//       title: "School",
+//       dataIndex: "school",
+//       key: "school",
+//       sorter: (a, b) => a.school.localeCompare(b.school),
+//       sortDirections: ["ascend", "descend"],
+//     },
+//     {
+//       title: "Medium",
+//       dataIndex: "medium",
+//       key: "medium",
+//       sorter: (a, b) => a.medium.localeCompare(b.medium),
+//       sortDirections: ["ascend", "descend"],
+//     },
+//     {
+//       title: "SchoolAddress",
+//       dataIndex: "schoolAddress",
+//       key: "schoolAddress",
+//       sorter: (a, b) => a.schoolAddress.localeCompare(b.schoolAddress),
+//       sortDirections: ["ascend", "descend"],
+//     },
+//     {
+//       title: "Action",
+//       key: "action",
+//       render: (_, record) => (
+//         <Space wrap>
+//           <Button
+//             color="purple"
+//             variant="filled"
+//             onClick={() => {
+//               updateStudentDetails(record);
+//             }}
+//           >
+//             Update
+//           </Button>
+//           <Button
+//             danger
+//             type="dashed"
+//             onClick={() => openDeletePopup(record.id)}
+//           >
+//             Delete
+//           </Button>
+//         </Space>
+//       ),
+//     },
+//   ];
+// // ...existing code...
