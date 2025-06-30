@@ -33,6 +33,18 @@ interface StudentsData {
   SchoolAddress: string;
 }
 
+const sortFieldMap: Record<string, string> = {
+  name: "Name",
+  fatherName: "FatherName",
+  date_of_Birth: "Date_of_Birth",
+  gender: "Gender",
+  class: "Class",
+  address: "Address",
+  school: "School",
+  medium: "Medium",
+  schoolAddress: "SchoolAddress",
+};
+
 const App: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const studentData = useSelector((state) => state?.student?.data);
@@ -54,6 +66,9 @@ const App: React.FC = () => {
     Medium: "",
     SchoolAddress: "",
   });
+  const [sortField, setSortField] = useState<string | undefined>(undefined);
+  const [sortOrder, setSortOrder] = useState<string | undefined>(undefined);
+
   const [form1] = Form.useForm();
   const [id, setId] = useState("");
   const [updateOpen, setUpdateOpen] = useState(false);
@@ -91,7 +106,12 @@ const App: React.FC = () => {
       setConfirmLoading(false);
     }
     closeDeletePopup();
-    fetchData(paginations.pageNumber, paginations.pageSize, undefined, undefined);
+    fetchData(
+      paginations.pageNumber,
+      paginations.pageSize,
+      undefined,
+      undefined
+    );
   };
 
   interface UpdateStudentRecord {
@@ -161,7 +181,7 @@ const App: React.FC = () => {
         const resizeDate = dayjs(formattedDate).format("DD-MM-YYYY");
         return <>{resizeDate}</>;
       },
-      sorter: {}
+      sorter: {},
     },
     {
       title: "Gender",
@@ -271,7 +291,13 @@ const App: React.FC = () => {
           SchoolAddress: "",
         });
         setOpen(false);
-        fetchData(paginations.pageNumber, paginations.pageSize, undefined, undefined);
+
+        fetchData(
+          paginations.pageNumber,
+          paginations.pageSize,
+          sortField,
+          sortOrder
+        );
       }
     } catch (error) {
       console.error(error);
@@ -286,7 +312,17 @@ const App: React.FC = () => {
     sortField: string,
     sortOrder: string
   ) => {
-    const response = await dispatch(GetAlluser({ pageNumber, pageSize, sortField, sortOrder }));
+    const backendSortField = sortFieldMap[sortField] || "Name";
+    const backendSortOrder = sortOrder || "asc";
+    console.log(
+      "The fields sent to backend: ",
+      backendSortField,
+      backendSortOrder
+    );
+    // console.log("The fileds  are inside the fetchdat a ", sortField, sortOrder);
+    const response = await dispatch(
+      GetAlluser({ pageNumber, pageSize, sortField: backendSortField, sortOrder: backendSortOrder  })
+    );
     if (response.payload?.success) {
       setPagination((prev) => ({
         ...prev,
@@ -304,7 +340,12 @@ const App: React.FC = () => {
       const response = await UpdateUser(id, allUpdatedata);
       console.log(response);
       if (response) {
-        fetchData(paginations.pageNumber, paginations.pageSize, undefined, undefined);
+        fetchData(
+          paginations.pageNumber,
+          paginations.pageSize,
+          sortField,
+          sortOrder
+        );
         setUpdateOpen(false);
       }
     } catch (error) {
@@ -323,23 +364,29 @@ const App: React.FC = () => {
     console.log(sorter);
     console.log(pagination);
     console.log(filters);
-    let sortField, sortOrder;
+    // let sortField, sortOrder;
+    let field: string | undefined;
+    let order: string | undefined;
     if (sorter && !Array.isArray(sorter)) {
-      sortField = sorter.field;
-      sortOrder =
+      field = (sorter.field as string) || sortField;
+      // sortField = sorter.field;
+      order =
         sorter.order === "ascend"
           ? "asc"
           : sorter.order === "descend"
           ? "desc"
           : undefined;
+
+      setSortField(field);
+      setSortOrder(order);
     }
     setPagination((prev) => ({
       ...prev,
       pageNumber: newPageNumber,
       pageSize: newPageSize,
     }));
-
-    await fetchData(newPageNumber, newPageSize, sortField, sortOrder);
+    console.log("The field is ", order);
+    await fetchData(newPageNumber, newPageSize, field, order);
   };
   const cancelStudent = (e: React.MouseEvent<HTMLButtonElement>) => {
     console.log(e);
@@ -349,8 +396,13 @@ const App: React.FC = () => {
   // end ant code
 
   useEffect(() => {
-    fetchData(paginations.pageNumber, paginations.pageSize, undefined, undefined);
-  }, []);
+    fetchData(
+      paginations.pageNumber,
+      paginations.pageSize,
+      sortField || "name",
+      sortOrder || "asc"
+    );
+  }, [paginations.pageNumber, paginations.pageSize, sortField, sortOrder]);
 
   const handleOk = () => {
     setConfirmLoading(true);
@@ -534,6 +586,7 @@ const App: React.FC = () => {
               current: paginations.pageNumber,
               pageSize: paginations.pageSize,
               total: paginations.total,
+              hideOnSinglePage: true,
             }}
           />
         </div>

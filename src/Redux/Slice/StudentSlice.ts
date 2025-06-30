@@ -51,7 +51,7 @@ export const GetAlluser = createAsyncThunk(
   "student/login",
   async ({ pageNumber, pageSize , sortField, sortOrder }: { pageNumber: number; pageSize: number , sortField: string , sortOrder :string }) => {
     try {
-      console.log(pageNumber,pageSize,sortField,sortOrder);
+      console.log("The filed's are",sortField,sortOrder);
       const response = await axiosInstance.get(`/api/StudentRegister/v1/AllUser?pageNumber=${pageNumber}&pageSize=${pageSize}&sortBy=${sortField}&sortOrder=${sortOrder}`, {
         params: { pageNumber, pageSize ,sortField, sortOrder},
       });
