@@ -1,0 +1,36 @@
+.ant-cascader-dropdown {
+  min-width: 195px;
+  min-height: 50px;
+  height: 100px;
+  gap: 2px;
+}
+
+
+
+.responsive-form-container {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 32px 0;
+  box-sizing: border-box;
+  background: #fff;
+}
+
+@media (max-width: 900px) {
+  .responsive-form-container {
+    padding: 16px 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .responsive-form-container {
+    align-items: stretch;
+    padding: 8px 0;
+  }
+  .responsive-form-container .ant-form {
+    width: 100%;
+    min-width: 0;
+  }
+}

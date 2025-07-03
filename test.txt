@@ -1,80 +1,8 @@
-// class Solution {
-//     public int lengthOfLongestSubstring(String s) {
-//         int left = 0;
-//         int maxLength = 0;
-//         HashSet<Character> charSet = new HashSet<>(); 
+It seems like you're asking for code examples demonstrating the usage of various `FormInstance` methods, likely from a UI library like Ant Design's `Form` component in React.
 
-//         for (int right = 0; right < s.length(); right++) {
-//             while (charSet.contains(s.charAt(right))) {
-//                 charSet.remove(s.charAt(left));
-//                 left++;
-//             }
+Below are code examples for each of the `FormInstance` methods you listed, assuming a React environment with Ant Design.
 
-//             charSet.add(s.charAt(right));
-//             maxLength = Math.max(maxLength, right - left + 1);
-//         }
-
-//         return maxLength;       
-//     }
-// }
-
-
-
-
-// var filterBuilder = Builders<StudentRequest>.Filter;
-// var filter = filterBuilder.Eq(s => s.IsDelete, false);
-
-// if (!string.IsNullOrEmpty(gender))
-//     filter &= filterBuilder.Eq(s => s.Gender, gender);
-
-// if (!string.IsNullOrEmpty(className))
-//     filter &= filterBuilder.Eq(s => s.Class, className);
-
-// return await _StudnetRegisterCollection
-//     .Find(filter)
-//     .Sort(sortDefinition)
-//     .Skip((pageNumber - 1) * pageSize)
-//     .Limit(pageSize)
-//     .ToListAsync();
-
-
-
-
-// public async Task<StudentResponse> AddSkills(SkillsRequest request)
-// {
-//     StudentResponse res = new StudentResponse();
- 
-//     // Initialize filter builder
-//     var filterBuilder = Builders<StudentRequest>.Filter;
- 
-//     // Base filter: only include non-deleted records
-//     var filter = filterBuilder.Eq(s => s.IsDelete, false);
- 
-//     // Loop through each student in the request.selectedKey
-//     if (request.selectedKey != null && request.selectedKey.Any())
-//     {        
-//         foreach (var student in request.selectedKey) 
-//         {
-//             if (!string.IsNullOrEmpty(student.Gender))
-//             {
-//                 // Add gender filter (you can chain more filters as needed)
-//                 filter &= filterBuilder.Eq(s => s.Gender, student.Gender);
-//             }
- 
-//             // Similarly, apply more conditions if needed
-//             // e.g., filter &= filterBuilder.Eq(s => s.City, student.City);
-//         }
-//     }
- 
-//     // Example usage (modify as per your DB context)
-//     // var result = await _studentCollection.Find(filter).ToListAsync();
-//     // res.Data = result;
- 
-//     return res;
-// }
-
-
-
+```jsx
 import React, { useRef, useEffect } from 'react';
 import { Form, Input, Button, message, Space } from 'antd';
 
@@ -119,7 +47,7 @@ const FormInstanceExample = () => {
   //    However, if it's from a custom form library, its implementation might vary.)
   //    For Ant Design, you generally don't need to directly access the field instance this way.
   const handleGetFieldInstance = () => {
-    message.warning("Ant Design's FormInstance does not typically expose 'getFieldInstance' directly in the public API for general use. You'd usually interact with the Field component or the Input's ref.");
+    message.warn("Ant Design's FormInstance does not typically expose 'getFieldInstance' directly in the public API for general use. You'd usually interact with the Field component or the Input's ref.");
   };
 
   // 3. getFieldsError
@@ -147,7 +75,7 @@ const FormInstanceExample = () => {
     // For Ant Design, `getFieldsValue(true)` is not a standard signature.
     // The `getFieldsValue` method typically returns values for mounted fields.
     // If you need values from unmounted fields, you'd usually manage them in your state.
-    message.warning("`getFieldsValue(true)` is not a standard Ant Design FormInstance signature for 'all values including unmounted'. `getFieldsValue()` typically gets values of currently mounted fields.");
+    message.warn("`getFieldsValue(true)` is not a standard Ant Design FormInstance signature for 'all values including unmounted'. `getFieldsValue()` typically gets values of currently mounted fields.");
   };
 
   // 5. getFieldValue
@@ -197,7 +125,6 @@ const FormInstanceExample = () => {
 
     } catch (error) {
       // Catch validation errors if any
-      console.log(error)
     }
   };
 
@@ -294,7 +221,7 @@ const FormInstanceExample = () => {
         >
           <Input />
         </Item>
-    
+
         <Item
           label="Password"
           name="password"
@@ -372,5 +299,35 @@ const FormInstanceExample = () => {
 };
 
 export default FormInstanceExample;
+```
 
- 
+**Explanation and Key Points:**
+
+1.  **`useForm()` Hook:** In functional React components, the `useForm()` hook from Ant Design is the primary way to get a `FormInstance`. It returns an array where the first element is the `form` instance.
+
+2.  **`Form` Component Props:**
+
+      * `form={form}`: This connects the `form` instance obtained from `useForm()` to your `Form` component.
+      * `ref={formRef}`: While `useForm()` is preferred, `ref` can also give you access to the underlying `Form` component instance, from which you can call methods.
+      * `name`: A name for the form, useful for debugging and accessibility.
+      * `initialValues`: Sets initial values for form fields.
+      * `onFinish` and `onFinishFailed`: Callbacks for when the form is successfully submitted or fails validation.
+      * `layout`: Determines the layout of form items (e.g., `vertical`, `horizontal`, `inline`).
+
+3.  **`Item` (Form.Item):** Each form field is wrapped in a `Form.Item`.
+
+      * `label`: The label displayed for the field.
+      * `name`: **Crucially, this connects the input component to the form's data model.** The `FormInstance` methods use this `name` to identify fields.
+      * `rules`: An array of validation rules for the field.
+
+4.  **Buttons to Trigger Methods:** Each `Button` component in the example is set up to call one of the `FormInstance` methods.
+
+5.  **Important Notes:**
+
+      * **`getFieldInstance`:** As noted in the code, `getFieldInstance` is not a standard, publicly exposed method in Ant Design's `FormInstance` for general use. If you need to access the underlying DOM element of an input, you'd typically use a `ref` directly on the `Input` component itself.
+      * **`getFieldsValue(true)`:** The `getFieldsValue(true)` signature to get "all values including unmounted fields" is not standard for Ant Design's `FormInstance`. `getFieldsValue()` generally returns values for currently mounted fields. If you have unmounted fields whose values you need, you'd usually manage those in your component's state.
+      * **Asynchronous Operations:** `validateFields` is asynchronous, so it returns a Promise. You'll often use `async/await` with it.
+      * **Error Handling:** Remember to include `try...catch` blocks when dealing with asynchronous validation (`validateFields`) to properly handle validation failures.
+      * **`message` Component:** The `ant-design` `message` component is used to provide user feedback for the actions.
+
+This comprehensive example should give you a clear understanding of how to use each `FormInstance` method in a practical React application with Ant Design.

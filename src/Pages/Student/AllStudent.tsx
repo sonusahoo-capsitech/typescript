@@ -12,6 +12,7 @@ import type { AppDispatch } from "../../Redux/Store.ts";
 import { Button, Modal, Input, Form, Select } from "antd";
 import type { FormProps } from "antd";
 import dayjs from "dayjs";
+import type { RootState } from "../../Redux/Store";
 // import type { TableColumnsType, TableProps } from 'antd';
 
 interface DataType {
@@ -45,9 +46,10 @@ const sortFieldMap: Record<string, string> = {
   schoolAddress: "SchoolAddress",
 };
 
+
 const App: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const studentData = useSelector((state) => state?.student?.data);
+  const studentData = useSelector((state: RootState) => state.student.data);
   console.log(studentData);
   const [form] = Form.useForm();
   // const [openDelete, setOpenDelete] = useState(false);
@@ -748,3 +750,4 @@ const App: React.FC = () => {
 };
 
 export default App;
+

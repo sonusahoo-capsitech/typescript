@@ -37,7 +37,7 @@ export async function registerUser(userData: SignupStudentData) {
       userData
     );
     console.log("The response is ", response);
-    if (!response.data?.user?.isSuccess) {
+    if (!response.data?.user?.isSuccess) {  
       throw new Error("Failed to register");
     }
     return response?.data;
@@ -107,7 +107,7 @@ export async function UpdateUser(
   }
 }
 
-//the slice is present here 
+//All slice 
 const studentSlice = createSlice({
   name: "student",
   initialState,
